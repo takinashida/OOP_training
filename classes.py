@@ -5,10 +5,10 @@ class Product:
     quantity: int
 
     def __init__(self, name, description, price, quantity):
-        Product.name = name
-        Product.description = description
-        Product.price = price
-        Product.quantity = quantity
+        self.name = name
+        self.description = description
+        self.price = price
+        self.quantity = quantity
 
 class Category:
     name: str
@@ -19,9 +19,9 @@ class Category:
 
 
     def __init__(self, name, description, products):
-        Category.name = name
-        Category.description = description
-        Category.products = list(products)
-        Category.product_count = len(products)
-        Category.category_count += 1
+        self.name = name
+        self.description = description
+        self.products = list(products)
+        self.product_count = len(products)
+        self.category_count += 1
 
