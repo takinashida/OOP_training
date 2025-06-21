@@ -3,17 +3,37 @@ from src.classes import Category, Product
 from src.utils import get_classes, json_load
 
 if __name__ == "__main__":
-    path_to_json = ROOT_DIR.joinpath("data", "products.json")
+    product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5)
+    product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
+    product3 = Product("Xiaomi Redmi Note 11", "1024GB, Синий", 31000.0, 14)
 
-    categories, products = get_classes(json_load(path_to_json))
+    category1 = Category(
+        "Смартфоны",
+        "Смартфоны, как средство не только коммуникации, но и получения дополнительных функций для удобства жизни",
+        [product1, product2, product3]
+    )
 
-    phones = categories[0]
-    new = []
-    for prod in phones.products:
-        new.append({"name": prod.name,"description": prod.description, "price": prod.price, "quantity": prod.quantity})
-    print(new)
-    # phone = {"name": "iphone","description": "None", "price": 150, "quantity": 1}
-    # new_1 = Product.new_product(new, phone)
-    # for phone in phones.products:
-    #     print(phone)
+    print(category1.str_products)
+    product4 = Product("55\" QLED 4K", "Фоновая подсветка", 123000.0, 7)
+    category1.add_product(product4)
+    print(category1.products)
+    print(category1.product_count)
+
+    products = category1.products
+    print(category1.products)
+    new_product = Product.new_product(
+        {"name": "Samsung Galaxy S23 Ultra", "description": "256GB, Серый цвет, 200MP камера", "price": 180000.0,
+         "quantity": 5}, products)
+    print(new_product.name)
+    print(new_product.description)
+    print(new_product.price)
+    print(new_product.quantity)
+
+    new_product.price = 800
+    print(new_product.price)
+
+    new_product.price = -100
+    print(new_product.price)
+    new_product.price = 0
+    print(new_product.price)
 
