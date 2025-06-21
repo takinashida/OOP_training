@@ -27,9 +27,7 @@ def test_get_classes():
         {
             "name": "cat1",
             "description": "be",
-            "products": [
-                {"name": "name1", "description": "be", "price": 1.0, "quantity": 1}
-            ],
+            "products": [{"name": "name1", "description": "be", "price": 1.0, "quantity": 1}],
         },
     ]
     categories, products = get_classes(fake_list)

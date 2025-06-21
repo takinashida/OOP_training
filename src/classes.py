@@ -26,7 +26,6 @@ class Product:
                 return
         self.__price = new_price
 
-
     @classmethod
     def new_product(cls, product_dict: dict, products: list):
         for product in products:
@@ -35,13 +34,11 @@ class Product:
                 product.price = max(product_dict["price"], product.price)
                 return product
         return cls(
-        name=product_dict["name"],
-        description=product_dict["description"],
-        price=product_dict["price"],
-        quantity=product_dict["quantity"]
+            name=product_dict["name"],
+            description=product_dict["description"],
+            price=product_dict["price"],
+            quantity=product_dict["quantity"],
         )
-
-
 
 
 class Category:
@@ -58,7 +55,6 @@ class Category:
         self.product_count = len(products)
         self.category_count += 1
 
-
     def add_product(self, new_product):
         self.__products.append(new_product)
 
@@ -66,15 +62,9 @@ class Category:
     def products(self):
         return self.__products
 
-
     @property
     def str_products(self):
         result = []
         for product in self.__products:
             result.append(f"{product.name}, {product.price} руб., Остаток: {product.quantity} шт.")
         return result
-
-
-
-
-
