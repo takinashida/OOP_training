@@ -12,14 +12,19 @@ class Category:
         self.product_count = len(products)
         self.category_count += 1
 
+    def __str__(self):
+        return f"{self.name}, количество продуктов: {len(self)} шт."
+
+    def __len__(self):
+        return len(self.__products)
+
     def add_product(self, new_product):
         try:
-            if isinstance(new_product,Product):
+            if isinstance(new_product, Product):
                 self.__products.append(new_product)
         except TypeError as e:
             print(f"Это не продукт: {e}")
             return
-
 
     @property
     def products(self):
@@ -28,11 +33,9 @@ class Category:
     @property
     def str_products(self):
         result = []
-        for product in self.__products:
-            result.append(f"{product.name}, {product.price} руб., Остаток: {product.quantity} шт.")
+        for product in self.products:
+            result.append(str(product))
         return result
-
-
 
 
 class Product:
@@ -46,6 +49,17 @@ class Product:
         self.description = description
         self.__price = price
         self.quantity = quantity
+
+    def __str__(self):
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        if isinstance(self, Product) and isinstance(other, Product):
+            return self.total_value() + other.total_value()
+
+    def total_value(self):
+        if isinstance(self, Product):
+            return self.price * self.quantity
 
     @property
     def price(self):
@@ -76,3 +90,22 @@ class Product:
             price=product_dict["price"],
             quantity=product_dict["quantity"],
         )
+
+
+class Iteration:
+
+    def __init__(self, stop):
+        if not isinstance(stop, Category):
+            raise ValueError
+        self.stop = stop
+
+    def __iter__(self):
+        self.index = -1
+        return self
+
+    def __next__(self):
+        if self.index + 1 < len(self.stop.products):
+            self.index += 1
+            return self.stop.products[self.index]
+        else:
+            raise StopIteration

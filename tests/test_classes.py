@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.classes import Category, Product
+from src.classes import Category, Iteration, Product
 
 
 @pytest.fixture
@@ -55,21 +55,26 @@ def test_new_products():
     )
     assert category1.products[0].quantity == 10
 
-    category1.add_product(Product.new_product(
+    category1.add_product(
+        Product.new_product(
             {
                 "name": "Sosung Galaxy S24 Ultra",
                 "description": "256GB, Серый цвет, 200MP камера",
                 "price": 180000.0,
                 "quantity": 5,
-            },category1.products))
+            },
+            category1.products,
+        )
+    )
     assert len(category1.products) == 4
+    assert product1 + product2 == 3480000.0
+    assert str(list(Iteration(category1))[0]) == "Samsung Galaxy S23 Ultra, 180000.0 руб. Остаток: 10 шт."
 
 
 def test_product(get_product):
     assert get_product.name == "phone"
     assert get_product.description == "good phone"
     assert get_product.price == 150.0
-
     assert get_product.quantity == 1
 
 
@@ -78,6 +83,8 @@ def test_category(get_category):
     assert get_category.name == "phones"
     assert get_category.description == "low quantity"
     assert get_category.products[0].name == "phone"
-    assert get_category.str_products == ["phone, 150.0 руб., Остаток: 1 шт."]
+    assert get_category.str_products == ["phone, 150.0 руб. Остаток: 1 шт."]
     assert get_category.product_count == 1
     assert get_category.category_count == 1
+    assert str(get_category) == "phones, количество продуктов: 1 шт."
+    assert len(get_category) == 1
