@@ -13,9 +13,7 @@ def json_load(path_to_data: str) -> list:
         return json.load(f)
 
 
-def get_classes(
-    categ_list: list, Product: classmethod = Product, Category: classmethod = Category
-) -> tuple:
+def get_classes(categ_list: list, Product: classmethod = Product, Category: classmethod = Category) -> tuple:
     """
     Распределяет данные из списка словарей по классам
     :param categ_list: Список словарей
@@ -34,8 +32,6 @@ def get_classes(
                 quantity=prod["quantity"],
             )
             products.append(temp)
-        temp = Category(
-            name=categ["name"], description=categ["description"], products=products
-        )
+        temp = Category(name=categ["name"], description=categ["description"], products=products)
         categories.append(temp)
     return categories, products
