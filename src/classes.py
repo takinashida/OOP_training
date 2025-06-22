@@ -1,3 +1,40 @@
+class Category:
+    name: str
+    description: str
+    products: list
+    category_count: int = 0
+    product_count: int
+
+    def __init__(self, name, description, products):
+        self.name = name
+        self.description = description
+        self.__products = list(products)
+        self.product_count = len(products)
+        self.category_count += 1
+
+    def add_product(self, new_product):
+        try:
+            if isinstance(new_product,Product):
+                self.__products.append(new_product)
+        except TypeError as e:
+            print(f"Это не продукт: {e}")
+            return
+
+
+    @property
+    def products(self):
+        return self.__products
+
+    @property
+    def str_products(self):
+        result = []
+        for product in self.__products:
+            result.append(f"{product.name}, {product.price} руб., Остаток: {product.quantity} шт.")
+        return result
+
+
+
+
 class Product:
     name: str
     description: str
@@ -39,32 +76,3 @@ class Product:
             price=product_dict["price"],
             quantity=product_dict["quantity"],
         )
-
-
-class Category:
-    name: str
-    description: str
-    products: list
-    category_count: int = 0
-    product_count: int
-
-    def __init__(self, name, description, products):
-        self.name = name
-        self.description = description
-        self.__products = list(products)
-        self.product_count = len(products)
-        self.category_count += 1
-
-    def add_product(self, new_product):
-        self.__products.append(new_product)
-
-    @property
-    def products(self):
-        return self.__products
-
-    @property
-    def str_products(self):
-        result = []
-        for product in self.__products:
-            result.append(f"{product.name}, {product.price} руб., Остаток: {product.quantity} шт.")
-        return result

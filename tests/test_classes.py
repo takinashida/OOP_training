@@ -54,17 +54,14 @@ def test_new_products():
         category1.products,
     )
     assert category1.products[0].quantity == 10
-    category1.add_product(
-        Product.new_product(
+
+    category1.add_product(Product.new_product(
             {
                 "name": "Sosung Galaxy S24 Ultra",
                 "description": "256GB, Серый цвет, 200MP камера",
                 "price": 180000.0,
                 "quantity": 5,
-            },
-            category1.products,
-        )
-    )
+            },category1.products))
     assert len(category1.products) == 4
 
 
