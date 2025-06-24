@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.classes import Category, Iteration, Product
+from src.classes import Category, Iteration, LawnGrass, Product, Smartphone
 
 
 @pytest.fixture
@@ -78,7 +78,6 @@ def test_product(get_product):
     assert get_product.quantity == 1
 
 
-# @patch(src.classes.self.__products)
 def test_category(get_category):
     assert get_category.name == "phones"
     assert get_category.description == "low quantity"
@@ -88,3 +87,63 @@ def test_category(get_category):
     assert get_category.category_count == 1
     assert str(get_category) == "phones, количество продуктов: 1 шт."
     assert len(get_category) == 1
+
+
+@pytest.fixture()
+def get_smartphones():
+    return Smartphone(
+        "Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5, 95.5, "S23 Ultra", 256, "Серый"
+    )
+
+
+def test_smartphone(get_smartphones):
+    smartphone = get_smartphones
+    assert smartphone.name == "Samsung Galaxy S23 Ultra"
+    assert smartphone.description == "256GB, Серый цвет, 200MP камера"
+    assert smartphone.price == 180000.0
+    assert smartphone.quantity == 5
+    assert smartphone.efficiency == 95.5
+    assert smartphone.model == "S23 Ultra"
+    assert smartphone.memory == 256
+    assert smartphone.color == "Серый"
+
+
+@pytest.fixture()
+def get_grass():
+    return LawnGrass("Газонная трава", "Элитная трава для газона", 500.0, 20, "Россия", "7 дней", "Зеленый")
+
+
+def test_grass(get_grass):
+    grass = get_grass
+    assert grass.name == "Газонная трава"
+    assert grass.description == "Элитная трава для газона"
+    assert grass.price == 500.0
+    assert grass.quantity == 20
+    assert grass.country == "Россия"
+    assert grass.germination_period == "7 дней"
+    assert grass.color == "Зеленый"
+
+
+def test_add_product():
+    category_smartphones = Category("Смартфоны", "Высокотехнологичные смартфоны", ["smartphone1", "smartphone2"])
+    with pytest.raises(TypeError) as e:
+        category_smartphones.add_product("Not a product")
+    assert str(e.value) == "Это не продукт"
+
+
+def test_add_in_product():
+    smartphone = Smartphone(
+        "Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5, 95.5, "S23 Ultra", 256, "Серый"
+    )
+    grass = LawnGrass("Газонная трава", "Элитная трава для газона", 500.0, 20, "Россия", "7 дней", "Зеленый")
+
+    with pytest.raises(TypeError) as e:
+        smartphone + grass
+    assert str(e.value) == "Вы пытаетесь сложить 2 разных товара"
+
+
+def test_raise_iteration():
+    grass = LawnGrass("Газонная трава", "Элитная трава для газона", 500.0, 20, "Россия", "7 дней", "Зеленый")
+    with pytest.raises(ValueError) as e:
+        Iteration(grass)
+    assert str(e.value) == "Это не категория"
