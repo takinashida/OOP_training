@@ -2,7 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from src.classes import Category, Iteration, LawnGrass, Product, Smartphone
+from src.classes import (BaseOrder, BaseProduct, Category, Iteration,
+                         LawnGrass, Order, Product, Smartphone)
 
 
 @pytest.fixture
@@ -84,7 +85,7 @@ def test_category(get_category):
     assert get_category.products[0].name == "phone"
     assert get_category.str_products == ["phone, 150.0 руб. Остаток: 1 шт."]
     assert get_category.product_count == 1
-    assert get_category.category_count == 1
+    assert get_category.category_count == 2
     assert str(get_category) == "phones, количество продуктов: 1 шт."
     assert len(get_category) == 1
 
@@ -147,3 +148,22 @@ def test_raise_iteration():
     with pytest.raises(ValueError) as e:
         Iteration(grass)
     assert str(e.value) == "Это не категория"
+
+
+def test_order():
+    product = Product('55" QLED 4K', "Фоновая подсветка", 123000.0, 7)
+    order = Order(product, 1)
+    assert order.link == product
+    order.add_product(Product('55" QLED 4K', "Фоновая подсветка", 123000.0, 2))
+    assert str(order) == '55" QLED 4K, количество продуктов: 3 шт.'
+    with pytest.raises(TypeError) as e:
+        order.add_product("Not a product")
+    assert str(e.value) == "Это не продукт"
+
+
+def test_abstract():
+    with pytest.raises(TypeError):
+        BaseProduct()
+
+    with pytest.raises(TypeError):
+        BaseOrder()

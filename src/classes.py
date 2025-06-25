@@ -1,4 +1,51 @@
-class Category:
+from abc import ABC, abstractmethod
+
+
+class BaseOrder(ABC):
+    """Базовый класс от которого зависит класс Category и Order"""
+
+    __slots__ = ()
+
+    @abstractmethod
+    def __str__(self) -> str:
+        pass
+
+    @abstractmethod
+    def add_product(self, new_product) -> None:
+        pass
+
+
+class Order(BaseOrder):
+    """Класс заказов зависящий от абстрактного класса BaseOrder"""
+
+    __slots__ = ("link", "quantity")
+
+    def __init__(self, link, quantity):
+        super().__init__()
+        self.link = link
+        self.quantity = quantity
+
+    def __str__(self) -> str:
+        """
+        dunder-метод __str__
+        :return: Оформленная строка
+        """
+        return f"{self.link.name}, количество продуктов: {self.quantity} шт."
+
+    def add_product(self, new_product) -> None:
+        """
+        Метод при помощи которого добавляют количество нового продукта
+        :param new_product: Объект класса продукт
+        :return: Ничего
+        """
+        if isinstance(new_product, Product) and self.link.name == new_product.name:
+            self.quantity += new_product.quantity
+        else:
+            raise TypeError("Это не продукт")
+        return
+
+
+class Category(BaseOrder):
     """Класс категорий товаров(Смартфоны, Трава и тд.)"""
 
     name: str
@@ -18,7 +65,7 @@ class Category:
         self.description = description
         self.__products = list(products)
         self.product_count = len(products)
-        self.category_count += 1
+        Category.category_count += 1
 
     def __str__(self) -> str:
         """
@@ -66,7 +113,45 @@ class Category:
         return result
 
 
-class Product:
+class BaseProduct(ABC):
+    """Базовый класс от которого зависит класс Product"""
+
+    @abstractmethod
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def __str__(self):
+        pass
+
+    @abstractmethod
+    def __add__(self, other):
+        pass
+
+    @abstractmethod
+    def total_value(self):
+        pass
+
+    @property
+    @abstractmethod
+    def price(self):
+        pass
+
+    @classmethod
+    @abstractmethod
+    def new_product(cls, product_dict: dict, products: list):
+        pass
+
+
+class Mixin:
+    """Класс доп функциональности"""
+
+    def __init__(self, *args, **kwargs):
+        name_class = self.__class__.__name__
+        print(f"{name_class} {args}")
+
+
+class Product(Mixin, BaseProduct):
     """Класс продукта(тип смартфона или вид травы)"""
 
     name: str
@@ -75,6 +160,7 @@ class Product:
     quantity: int
 
     def __init__(self, name: str, description: str, price: float, quantity: int) -> None:
+        super().__init__(name, description, price, quantity)
         """
         Метод инициации класса
         :param name: Название категории
@@ -110,8 +196,7 @@ class Product:
         Общая стоимость товаров
         :return: Произведение цены и количества
         """
-        if isinstance(self, Product):
-            return self.price * self.quantity
+        return self.price * self.quantity
 
     @property
     def price(self) -> float:
@@ -250,3 +335,6 @@ class LawnGrass(Product):
         self.country = country
         self.germination_period = germination_period
         self.color = color
+
+
+product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5)
