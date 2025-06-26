@@ -1,4 +1,14 @@
 from abc import ABC, abstractmethod
+from pyexpat.errors import messages
+
+
+class Mixin:
+    """Класс доп функциональности"""
+
+    def __init__(self, *args, **kwargs):
+        name_class = self.__class__.__name__
+        print(f"{name_class} {args}")
+        super().__init__()
 
 
 class BaseOrder(ABC):
@@ -15,7 +25,17 @@ class BaseOrder(ABC):
         pass
 
 
-class Order(BaseOrder):
+class NullException(Exception):
+    """Класс для вызова ошибки при попытке добавления продукта с нулевым количеством."""
+
+    def __init__(self, message="Нельзя добавить ноль товаров"):
+        self.message = message
+
+    def __str__(self):
+        return self.message
+
+
+class Order(BaseOrder, Mixin):
     """Класс заказов зависящий от абстрактного класса BaseOrder"""
 
     __slots__ = ("link", "quantity")
@@ -23,7 +43,13 @@ class Order(BaseOrder):
     def __init__(self, link, quantity):
         super().__init__()
         self.link = link
-        self.quantity = quantity
+        try:
+            if quantity == 0:
+                raise NullException()
+            else:
+                self.quantity = quantity
+        finally:
+            print("Обработка добавления товара завершена")
 
     def __str__(self) -> str:
         """
@@ -45,7 +71,7 @@ class Order(BaseOrder):
         return
 
 
-class Category(BaseOrder):
+class Category(BaseOrder, Mixin):
     """Класс категорий товаров(Смартфоны, Трава и тд.)"""
 
     name: str
@@ -64,7 +90,15 @@ class Category(BaseOrder):
         self.name = name
         self.description = description
         self.__products = list(products)
-        self.product_count = len(products)
+        try:
+            if len(products) == 0:
+                raise NullException()
+            else:
+                self.product_count = len(products)
+        except NullException:
+            print("Нельзя добавить ноль товаров")
+        finally:
+            print("Обработка добавления товара завершена")
         Category.category_count += 1
 
     def __str__(self) -> str:
@@ -92,6 +126,21 @@ class Category(BaseOrder):
         else:
             raise TypeError("Это не продукт")
         return
+
+    def avg_price(self) -> float | int:
+        """
+        Рассчитывает среднюю стоимость 1 товара в категории
+        :return: средняя стоимость товара, если товаров нет 0
+        """
+        avg = 0
+        for prod in self.products:
+            avg += prod.price
+        try:
+            avg /= len(self.products)
+        except ZeroDivisionError:
+            return 0
+        else:
+            return round(avg, 2)
 
     @property
     def products(self) -> list:
@@ -143,14 +192,6 @@ class BaseProduct(ABC):
         pass
 
 
-class Mixin:
-    """Класс доп функциональности"""
-
-    def __init__(self, *args, **kwargs):
-        name_class = self.__class__.__name__
-        print(f"{name_class} {args}")
-
-
 class Product(Mixin, BaseProduct):
     """Класс продукта(тип смартфона или вид травы)"""
 
@@ -171,7 +212,10 @@ class Product(Mixin, BaseProduct):
         self.name = name
         self.description = description
         self.__price = price
-        self.quantity = quantity
+        if quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
+        else:
+            self.quantity = quantity
 
     def __str__(self):
         """
@@ -335,6 +379,3 @@ class LawnGrass(Product):
         self.country = country
         self.germination_period = germination_period
         self.color = color
-
-
-product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5)
