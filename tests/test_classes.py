@@ -3,7 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from src.classes import (BaseOrder, BaseProduct, Category, Iteration,
-                         LawnGrass, Order, Product, Smartphone)
+                         LawnGrass, NullException, Order, Product, Smartphone)
 
 
 @pytest.fixture
@@ -167,3 +167,33 @@ def test_abstract():
 
     with pytest.raises(TypeError):
         BaseOrder()
+
+
+def test_NullException(capsys):
+    category_empty = Category("Пустая категория", "Категория без продуктов", [])
+    captured = capsys.readouterr()
+    assert (
+        captured.out
+        == """Нельзя добавить ноль товаров
+Обработка добавления товара завершена
+"""
+    )
+
+
+def test_null_product():
+    with pytest.raises(ValueError):
+        product = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 0)
+
+
+def test_avg_price():
+    category = Category(
+        name="phones",
+        description="low quantity",
+        products=[
+            Product(name="phone", description="good phone", price=150.0, quantity=1),
+            Product(name="phone", description="good phone", price=450.0, quantity=1),
+        ],
+    )
+    assert category.avg_price() == 300.0
+    category = Category(name="phones", description="low quantity", products=[])
+    assert category.avg_price() == 0
